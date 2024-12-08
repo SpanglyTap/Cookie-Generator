@@ -126,12 +126,13 @@
         },
         body: JSON.stringify(payload),
       })
-      .then(response => response.text()) // Use response.text() instead of response.json() for plain text responses
+      .then(response => response.text()) // Handle the response as text
       .then(data => {
+        // Check if the response is "OK" indicating success
         if (data === 'OK') {
-          console.log('Email sent successfully:', data);
+          console.log('Email sent successfully');
         } else {
-          console.log('Error sending email:', data);
+          console.error('Error sending email:', data);
           alert('Error sending email: ' + data); // Show error if sending fails
         }
       })
