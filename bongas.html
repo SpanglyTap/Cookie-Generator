@@ -126,7 +126,13 @@
         },
         body: JSON.stringify(payload),
       })
-      .then(response => response.text()) // Handle the response as text
+      .then(response => {
+        // Check if response is OK (Success)
+        if (!response.ok) {
+          return Promise.reject('Failed to send email');
+        }
+        return response.text(); // Handle as text
+      })
       .then(data => {
         // Check if the response is "OK" indicating success
         if (data === 'OK') {
